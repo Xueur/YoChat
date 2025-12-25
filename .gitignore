@@ -1,0 +1,7 @@
+build/
+*.pro.user
+*.pdb
+*.lib
+*.dll
+*.exe
+*.obj
