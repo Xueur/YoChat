@@ -1,5 +1,5 @@
 #pragma once
-#include "commen.h"
+#include "common.h"
 
 class HttpConnection: public std::enable_shared_from_this<HttpConnection>
 {
@@ -11,7 +11,7 @@ private:
     void checkDeadline();
     void preParseGetParam();
     void handleReq();
-    void writeRes();
+    void writeRsp();
 
     tcp::socket _socket;
     beast::flat_buffer _buffer{ 8192 };

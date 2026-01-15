@@ -1,5 +1,6 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
+#include "VerifyGrpcClient.h"
 
 LogicSystem::LogicSystem()
 {
@@ -12,7 +13,7 @@ LogicSystem::LogicSystem()
             beast::ostream(conn->_response.body()) << ", " << " value is " << elem.second << std::endl;
         }
     });
-    regPost("/get_varifycode", [](std::shared_ptr<HttpConnection> conn) {
+    regPost("/get_verifycode", [](std::shared_ptr<HttpConnection> conn) {
         auto body_str = boost::beast::buffers_to_string(conn->_request.body().data());
         std::cout << "receive body is " << body_str << std::endl;
         conn->_response.set(http::field::content_type, "text/json");
@@ -35,6 +36,7 @@ LogicSystem::LogicSystem()
             return;
         }
         auto email = src_root["email"].asString();
+        GetVerifyRsp rsp = VerifyGrpcClient::getInstance()->GetVerifyCode(email);
         std::cout << "email is " << email << std::endl;
         root["error"] = 0;
         root["email"] = src_root["email"];
