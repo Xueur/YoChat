@@ -37,7 +37,10 @@ public:
         }
         return SectionInfo();
     }
-    ConfigMgr() ;
+    static ConfigMgr& getInstance() {
+        static ConfigMgr instance;
+        return instance;
+    }
     ConfigMgr(const ConfigMgr& src) {
         _config_map = src._config_map;
     }
@@ -48,6 +51,9 @@ public:
         return *this;
     }
 private:
+    ConfigMgr();
+    ConfigMgr(ConfigMgr&&) = delete;
+    ConfigMgr& operator=(ConfigMgr&&) = delete;
     std::map<std::string, SectionInfo> _config_map;
 };
 
