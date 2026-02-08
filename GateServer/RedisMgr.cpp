@@ -197,8 +197,8 @@ bool RedisMgr::HSet(const std::string& key, const std::string& hkey, const std::
 }
 bool RedisMgr::HSet(const char* key, const char* hkey, const char* hvalue, size_t hvaluelen)
 {
-    const char* argv[4];
-    size_t argvlen[4];
+    const char* argv[4] = {nullptr};
+    size_t argvlen[4] = { 0 };
     argv[0] = "HSET";
     argvlen[0] = 4;
     argv[1] = key;
@@ -222,8 +222,8 @@ bool RedisMgr::HSet(const char* key, const char* hkey, const char* hvalue, size_
 
 std::string RedisMgr::HGet(const std::string& key, const std::string& hkey)
 {
-    const char* argv[3];
-    size_t argvlen[3];
+    const char* argv[3] = {nullptr};
+    size_t argvlen[3] = { 0 };
     argv[0] = "HGET";
     argvlen[0] = 4;
     argv[1] = key.c_str();

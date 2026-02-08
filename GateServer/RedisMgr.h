@@ -20,6 +20,7 @@ private:
     std::atomic<bool> _stop;
 };
 
+
 class RedisMgr : public Singleton<RedisMgr>,
     public std::enable_shared_from_this<RedisMgr>
 {
