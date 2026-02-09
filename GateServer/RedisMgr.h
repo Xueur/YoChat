@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include <hiredis/hiredis.h>
 #include "Singleton.h"
 
 class RedisConPool {

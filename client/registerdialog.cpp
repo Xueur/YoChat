@@ -134,3 +134,9 @@ void RegisterDialog::on_yes_button_clicked()
                                         json_obj, ReqId::ID_REG_USER,Modules::REGISTERMOD);
 }
 
+
+void RegisterDialog::on_no_button_clicked()
+{
+
+}
+

@@ -2,9 +2,11 @@
 #include "CServer.h"
 #include "ConfigMgr.h"
 #include "RedisMgr.h"
+#include <Windows.h>
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     auto& gCfgMgr = ConfigMgr::getInstance();
     std::string gate_port_str = gCfgMgr["GateServer"]["port"];
     unsigned short gate_port = atoi(gate_port_str.c_str());

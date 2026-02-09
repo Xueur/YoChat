@@ -2,6 +2,7 @@
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
 #include "RedisMgr.h"
+#include "MysqlMgr.h"
 
 LogicSystem::LogicSystem()
 {
@@ -78,15 +79,14 @@ LogicSystem::LogicSystem()
             return true;
         }
         //访问数据库查找用户名是否存在
-        bool b_usr_exist = RedisMgr::getInstance()->ExistsKey(src_root["user"].asString());
-        if (b_usr_exist) {
-            std::cout << " user exist" << std::endl;
+        int uid = MysqlMgr::getInstance()->RegUser(src_root["user"].asString(), src_root["email"].asString(), src_root["pwd"].asString());
+        if (uid == 0 || uid == -1) {
+            std::cout << "user or email exist" << std::endl;
             root["error"] = ErrorCodes::UserExist;
             std::string jsonstr = root.toStyledString();
             beast::ostream(connection->_response.body()) << jsonstr;
             return true;
         }
-        //查找数据库判断用户是否存在
         root["error"] = 0;
         root["email"] = src_root["email"];
         root["user"] = src_root["user"].asString();
