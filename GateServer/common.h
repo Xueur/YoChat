@@ -29,6 +29,8 @@ enum ErrorCodes {
     VerifyExpired = 1003, //验证码过期
     VerifyCodeErr = 1004, //验证码错误
     UserExist = 1005, //用户已经存在
+    EmailNotMatch = 1006, //用户名和邮箱不匹配
+    PwdUpFailed = 1007, //密码更新失败
 };
 
 class Defer {

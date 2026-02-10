@@ -15,10 +15,14 @@ public:
     explicit LoginDialog(QWidget *parent = nullptr);
     ~LoginDialog();
 
+private slots:
+    void slot_forget_pwd();
+
 private:
     Ui::LoginDialog *ui;
 signals:
     void switchRegister();
+    void switchReset();
 };
 
 #endif // LOGINDIALOG_H
