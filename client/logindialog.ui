@@ -90,7 +90,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="user_label">
+        <widget class="QLabel" name="email_label">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -104,12 +104,12 @@
           </size>
          </property>
          <property name="text">
-          <string>用户：</string>
+          <string>邮箱：</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="user_edit">
+        <widget class="QLineEdit" name="email_edit">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -190,6 +190,28 @@
       </layout>
      </item>
      <item>
+      <widget class="QLabel" name="err_tip">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>请输入登录信息</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
@@ -218,7 +240,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="LoginButton">
+        <widget class="QPushButton" name="login_btn">
          <property name="text">
           <string>登录</string>
          </property>
@@ -255,7 +277,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="register_button">
+        <widget class="QPushButton" name="register_btn">
          <property name="text">
           <string>注册</string>
          </property>

@@ -207,10 +207,10 @@ bool RegisterDialog::checkVerifyValid()
 
     auto pass = ui->verify_edit->text();
     if(pass.isEmpty()){
-        AddTipErr(TipErr::TIP_VARIFY_ERR, tr("验证码不能为空"));
+        AddTipErr(TipErr::TIP_VERIFY_ERR, tr("验证码不能为空"));
         return false;
     }
-    DelTipErr(TipErr::TIP_VARIFY_ERR);
+    DelTipErr(TipErr::TIP_VERIFY_ERR);
     return true;
 }
 

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d83f5a60-00ae-486d-97bb-c3707ee6b5a2}</ProjectGuid>
-    <RootNamespace>GateServer</RootNamespace>
+    <ProjectGuid>{ab5e2ba9-32c7-4610-8941-095fc6bd09b4}</ProjectGuid>
+    <RootNamespace>StatusServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,9 +139,12 @@
     <ClCompile Include="MysqlDao.cpp" />
     <ClCompile Include="MysqlMgr.cpp" />
     <ClCompile Include="RedisMgr.cpp" />
-    <ClCompile Include="Singleton.h" />
-    <ClCompile Include="StatusGrpcClient.cpp" />
-    <ClCompile Include="VerifyGrpcClient.cpp" />
+    <ClCompile Include="StatusServer.cpp" />
+    <ClCompile Include="StatusServiceImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.ini" />
+    <None Include="message.proto" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsioIOServicePool.h" />
@@ -155,12 +158,8 @@
     <ClInclude Include="MysqlDao.h" />
     <ClInclude Include="MysqlMgr.h" />
     <ClInclude Include="RedisMgr.h" />
-    <ClInclude Include="StatusGrpcClient.h" />
-    <ClInclude Include="VerifyGrpcClient.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config.ini" />
-    <None Include="message.proto" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="StatusServiceImpl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
