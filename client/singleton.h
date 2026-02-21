@@ -1,6 +1,6 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
-#include <global.h>
+#include "global.h"
 template <typename T>
 class Singleton {
 protected:
