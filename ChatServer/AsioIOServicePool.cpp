@@ -9,7 +9,7 @@ _works(size), _nextIOService(0) {
     for (std::size_t i = 0; i < _ioServices.size(); ++i) {
         _threads.emplace_back([this, i]() {
             _ioServices[i].run();
-        });
+            });
     }
 }
 AsioIOServicePool::~AsioIOServicePool() {

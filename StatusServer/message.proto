@@ -19,12 +19,26 @@ message GetVerifyRsp {
 message GetChatServerReq {
   int32 uid = 1;
 }
+
 message GetChatServerRsp {
   int32 error = 1;
   string host = 2;
   string port = 3;
   string token = 4;
 }
+
+message LoginRsp {
+    int32 error = 1;
+    int32 uid = 2;
+    string token = 3;
+}
+
+message LoginReq {
+    int32 uid = 1;
+    string token = 2;
+}
+
 service StatusService {
     rpc GetChatServer (GetChatServerReq) returns (GetChatServerRsp) {}
+    rpc Login(LoginReq) returns (LoginRsp);
 }

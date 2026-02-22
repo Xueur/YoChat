@@ -18,7 +18,8 @@
     </ClCompile>
     <PostBuildEvent>
       <Command>xcopy $(ProjectDir)config.ini  $(SolutionDir)$(Platform)\$(Configuration)\   /y
-xcopy $(ProjectDir)*.dll   $(SolutionDir)$(Platform)\$(Configuration)\   /y</Command>
+xcopy C:\vcpkg\installed\x64-windows\debug\bin\*.dll   $(SolutionDir)$(Platform)\$(Configuration)\   /y
+xcopy C:\Boost\jsoncpp\jsoncpp-1.9.6\build\bin\Debug\*.dll $(SolutionDir)$(Platform)\$(Configuration)\   /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />

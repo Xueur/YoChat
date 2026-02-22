@@ -13,7 +13,7 @@ public:
 private:
     TcpMgr();
     void initHandlers();
-    void handleMsg();
+    void handleMsg(ReqId id, int len, QByteArray data);
     QTcpSocket _socket;
     QString _host;
     uint16_t _port;
@@ -27,8 +27,7 @@ public slots:
     void slot_send_data(ReqId reqId, QString data);
 signals:
     void sig_con_success(bool bsuccess);
-    void sig_send_data(ReqId reqId, QString data);
-    void sig_switch_chatDlg();
+    void sig_chat_login_success();
     void sig_login_failed(int);
 };
 

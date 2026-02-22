@@ -26,6 +26,8 @@ private slots:
 
     void slot_tcp_con_finish(bool bsuccess);
 
+    void slot_chat_login_finish();
+
 private:
     Ui::LoginDialog *ui;
     void initHttpHandlers();
@@ -43,6 +45,7 @@ signals:
     void switchRegister();
     void switchReset();
     void sig_connect_tcp(ServerInfo);
+    void sig_send_data(ReqId reqId, QString data);
 };
 
 #endif // LOGINDIALOG_H

@@ -1,6 +1,7 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
+#include "StatusGrpcClient.h"
 #include "RedisMgr.h"
 #include "MysqlMgr.h"
 
@@ -191,7 +192,7 @@ LogicSystem::LogicSystem()
         }
 
         //查询StatusServer找到合适的连接
-        auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userInfo.uid);
+        auto reply = StatusGrpcClient::getInstance()->GetChatServer(userInfo.uid);
         if (reply.error()) {
             std::cout << " grpc get chat server failed, error is " << reply.error() << std::endl;
             root["error"] = ErrorCodes::RPCFailed;

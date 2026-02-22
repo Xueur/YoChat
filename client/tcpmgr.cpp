@@ -1,4 +1,5 @@
 #include "tcpmgr.h"
+#include "usermgr.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 TcpMgr::~TcpMgr()
@@ -20,13 +21,11 @@ TcpMgr::TcpMgr():_host(""),_port(0),_b_recv_pending(false),_message_id(0),_messa
         QDataStream stream(&_buffer, QIODevice::ReadOnly);
         stream.setVersion(QDataStream::Qt_5_0);
         forever {
-            //先解析头部
             if(!_b_recv_pending){
                 // 检查缓冲区中的数据是否足够解析出一个消息头（消息ID + 消息长度）
                 if (_buffer.size() < static_cast<int>(sizeof(quint16) * 2)) {
-                    return; // 数据不够，等待更多数据
+                    return;
                 }
-                // 预读取消息ID和消息长度，但不从缓冲区中移除
                 stream >> _message_id >> _message_len;
                 //将buffer 中的前四个字节移除
                 _buffer = _buffer.mid(sizeof(quint16) * 2);
@@ -43,6 +42,7 @@ TcpMgr::TcpMgr():_host(""),_port(0),_b_recv_pending(false),_message_id(0),_messa
             QByteArray messageBody = _buffer.mid(0, _message_len);
             qDebug() << "receive body msg is " << messageBody ;
             _buffer = _buffer.mid(_message_len);
+            handleMsg(ReqId(_message_id), _message_len, messageBody);
         }
     });
 
@@ -52,11 +52,10 @@ TcpMgr::TcpMgr():_host(""),_port(0),_b_recv_pending(false),_message_id(0),_messa
         qDebug() << "Error:" << _socket.errorString();
     });
 
-    // 处理连接断开
     QObject::connect(&_socket, &QTcpSocket::disconnected, [&]() {
         qDebug() << "Disconnected from server.";
     });
-    QObject::connect(this, &TcpMgr::sig_send_data, this, &TcpMgr::slot_send_data);
+
 }
 
 void TcpMgr::initHandlers()
@@ -65,10 +64,8 @@ void TcpMgr::initHandlers()
     _handlers.insert(ID_CHAT_LOGIN_RSP, [this](ReqId id, int len, QByteArray data){
         Q_UNUSED(len);
         qDebug()<< "handle id is "<< id ;
-        // 将QByteArray转换为QJsonDocument
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
 
-        // 检查转换是否成功
         if(jsonDoc.isNull()){
             qDebug() << "Failed to create QJsonDocument.";
             return;
@@ -90,12 +87,21 @@ void TcpMgr::initHandlers()
             emit sig_login_failed(err);
             return;
         }
+        UserMgr::getInstance()->SetUid(jsonObj["uid"].toInt());
+        UserMgr::getInstance()->SetName(jsonObj["name"].toString());
+        UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
+        emit sig_chat_login_success();
     });
 }
 
-void TcpMgr::handleMsg()
+void TcpMgr::handleMsg(ReqId id, int len, QByteArray data)
 {
-
+    auto find_iter = _handlers.find(id);
+    if (find_iter == _handlers.end()) {
+        qDebug() << "not found id " << id << " to handle";
+        return;
+    }
+    find_iter.value()(id, len, data);
 }
 
 void TcpMgr::slot_tcp_connect(ServerInfo si)
