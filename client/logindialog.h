@@ -44,6 +44,7 @@ private:
 signals:
     void switchRegister();
     void switchReset();
+    void switchChat();
     void sig_connect_tcp(ServerInfo);
     void sig_send_data(ReqId reqId, QString data);
 };

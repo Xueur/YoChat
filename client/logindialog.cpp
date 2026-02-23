@@ -181,7 +181,7 @@ void LoginDialog::slot_tcp_con_finish(bool bsuccess)
 
 void LoginDialog::slot_chat_login_finish()
 {
-
+    emit switchChat();
 }
 
 
