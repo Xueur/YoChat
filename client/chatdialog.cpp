@@ -15,11 +15,24 @@ ChatDialog::ChatDialog(QWidget *parent)
     ui->setupUi(this);
     ui->add_btn->SetState("normal", "hover", "press");
     addChatUserList();
-    this->ShowSearch(false);
+    QPixmap pixmap(":/res/head_1.jpg");
+    ui->side_head_label->setPixmap(pixmap); // 将图片设置到QLabel上
+    QPixmap scaledPixmap = pixmap.scaled( ui->side_head_label->size(), Qt::KeepAspectRatio); // 将图片缩放到label的大小
+    ui->side_head_label->setPixmap(scaledPixmap); // 将缩放后的图片设置到QLabel上
+    ui->side_head_label->setScaledContents(true); // 设置QLabel自动缩放图片内容以适应大小
+    ui->side_chat_label->setProperty("state","normal");
+    ui->side_chat_label->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
+    ui->side_contact_label->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
+    AddLBGroup(ui->side_chat_label);
+    AddLBGroup(ui->side_contact_label);
+    connect(ui->side_chat_label, &StateWidget::clicked, this, &ChatDialog::slot_side_chat);
+    connect(ui->side_contact_label, &StateWidget::clicked, this, &ChatDialog::slot_side_contact);
     connect(ui->search_edit, &CustomizeEdit::sig_clear_edit, this, [this] {
         this->ShowSearch(false);
     });
     connect(ui->chat_user_list, &ChatUserList::sig_loading_chat_user, this, &ChatDialog::slot_loading_chat_user);
+    connect(ui->search_edit, &QLineEdit::textChanged, this, &ChatDialog::slot_text_changed);
+    this->ShowSearch(false);
 }
 
 ChatDialog::~ChatDialog()
@@ -86,6 +99,31 @@ void ChatDialog::slot_loading_chat_user()
     _b_loading = false;
 }
 
+void ChatDialog::slot_side_chat()
+{
+    qDebug()<< "receive side chat clicked";
+    ClearLabelState(ui->side_chat_label);
+    ui->stackedWidget->setCurrentWidget(ui->chat_page);
+    _state = ChatUIMode::ChatMode;
+    ShowSearch(false);
+}
+
+void ChatDialog::slot_side_contact()
+{
+    qDebug()<< "receive side contact clicked";
+    ClearLabelState(ui->side_contact_label);
+    //设置
+    ui->stackedWidget->setCurrentWidget(ui->friend_apply_page);
+    _state = ChatUIMode::ContactMode;
+    ShowSearch(false);
+}
+
+void ChatDialog::slot_text_changed(const QString &str)
+{
+    qDebug()<< "receive slot text changed str is " << str;
+    ShowSearch(true);
+}
+
 void ChatDialog::addChatUserList()
 {
     // 创建QListWidgetItem，并设置自定义的widget
@@ -102,4 +140,20 @@ void ChatDialog::addChatUserList()
         ui->chat_user_list->addItem(item);
         ui->chat_user_list->setItemWidget(item, chat_user_wid);
     }
+}
+
+void ChatDialog::ClearLabelState(StateWidget *lb)
+{
+    for(auto & ele: _lb_list){
+        if(ele == lb){
+            continue;
+        }
+        ele->ClearState();
+    }
+}
+
+void ChatDialog::AddLBGroup(StateWidget *lb)
+{
+
+    _lb_list.push_back(lb);
 }
