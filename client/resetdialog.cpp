@@ -163,7 +163,7 @@ bool ResetDialog::checkVarifyValid()
 void ResetDialog::AddTipErr(TipErr te, QString tips)
 {
     _tip_errs[te] = tips;
-    showTip(tips, te == TIP_RESET_SUCCESS);
+    showTip(tips, te == TIP_SUCCESS);
 }
 
 void ResetDialog::DelTipErr(TipErr te)

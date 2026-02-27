@@ -4,6 +4,7 @@
 #include "chatuserwid.h"
 #include "chatuserlist.h"
 #include "loadingdlg.h"
+#include "global.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -25,6 +26,10 @@ ChatDialog::ChatDialog(QWidget *parent)
     ui->side_contact_label->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
     AddLBGroup(ui->side_chat_label);
     AddLBGroup(ui->side_contact_label);
+    //检测鼠标点击位置判断是否要清空搜索框
+    this->installEventFilter(this); // 安装事件过滤器
+    //设置聊天label选中状态
+    ui->side_chat_label->SetSelected(true);
     connect(ui->side_chat_label, &StateWidget::clicked, this, &ChatDialog::slot_side_chat);
     connect(ui->side_contact_label, &StateWidget::clicked, this, &ChatDialog::slot_side_contact);
     connect(ui->search_edit, &CustomizeEdit::sig_clear_edit, this, [this] {
@@ -39,28 +44,6 @@ ChatDialog::~ChatDialog()
 {
     delete ui;
 }
-
-std::vector<QString>  strs ={"Hello world!",
-                             "Nice to meet you!",
-                             "New year，new life!",
-                             "You have to love yourself!",
-                             "My love is written in the wind ever since the whole world is you!"};
-std::vector<QString> heads = {
-    ":/res/head_1.jpg",
-    ":/res/head_2.jpg",
-    ":/res/head_3.jpg",
-    ":/res/head_4.jpg",
-    ":/res/head_5.jpg"
-};
-std::vector<QString> names = {
-    "Qt",
-    "Cpp",
-    "Golang",
-    "java",
-    "Nodejs",
-    "python",
-    "rust"
-};
 
 void ChatDialog::ShowSearch(bool bsearch)
 {
@@ -121,7 +104,9 @@ void ChatDialog::slot_side_contact()
 void ChatDialog::slot_text_changed(const QString &str)
 {
     qDebug()<< "receive slot text changed str is " << str;
-    ShowSearch(true);
+    if (!str.isEmpty()) {
+        ShowSearch(true);
+    }
 }
 
 void ChatDialog::addChatUserList()
@@ -156,4 +141,29 @@ void ChatDialog::AddLBGroup(StateWidget *lb)
 {
 
     _lb_list.push_back(lb);
+}
+
+bool ChatDialog::eventFilter(QObject *watched, QEvent *event)
+{
+
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        handleGlobalMousePress(mouseEvent);
+    }
+    return QDialog::eventFilter(watched, event);
+}
+
+void ChatDialog::handleGlobalMousePress(QMouseEvent *event)
+{
+    if( _mode != ChatUIMode::SearchMode){
+        return;
+    }
+    // 将鼠标点击位置转换为搜索列表坐标系中的位置
+    QPoint posInSearchList = ui->search_list->mapFromGlobal(event->globalPosition().toPoint());
+    // 判断点击位置是否在聊天列表的范围内
+    if (!ui->search_list->rect().contains(posInSearchList)) {
+        // 如果不在聊天列表内，清空输入框
+        ui->search_edit->clear();
+        ShowSearch(false);
+    }
 }

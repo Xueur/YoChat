@@ -17,7 +17,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(this, &LoginDialog::sig_connect_tcp, TcpMgr::getInstance().get(), &TcpMgr::slot_tcp_connect);
     connect(TcpMgr::getInstance().get(), &TcpMgr::sig_con_success, this, &LoginDialog::slot_tcp_con_finish);
     connect(this, &LoginDialog::sig_send_data, TcpMgr::getInstance().get(), &TcpMgr::slot_send_data);
-    connect(TcpMgr::getInstance().get(), &TcpMgr::sig_chat_login_success, this, &LoginDialog::slot_chat_login_finish);
+    connect(TcpMgr::getInstance().get(), &TcpMgr::sig_swich_chatdlg, this, &LoginDialog::slot_chat_login_finish);
 }
 
 LoginDialog::~LoginDialog()

@@ -20,6 +20,9 @@ public:
     void addChatUserList();
     void ClearLabelState(StateWidget* lb);
     void AddLBGroup(StateWidget* lb);
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void handleGlobalMousePress(QMouseEvent *event);
 private:
     void ShowSearch(bool bsearch);
     Ui::ChatDialog *ui;
