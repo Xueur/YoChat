@@ -44,7 +44,6 @@ ChatServer StatusServiceImpl::getChatServer() {
 			minServer = server.second;
 		}
 	}
-
 	return minServer;
 }
 
