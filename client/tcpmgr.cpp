@@ -57,7 +57,7 @@ TcpMgr::TcpMgr():_host(""),_port(0),_b_recv_pending(false),_message_id(0),_messa
 
           QObject::connect(&_socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::errorOccurred), [&](QAbstractSocket::SocketError socketError) {
               Q_UNUSED(socketError)
-              qDebug() << "Error:" << _socket.errorString();
+              qDebug() << "!Error:" << _socket.errorString();
           });
 
     // 处理连接断开
@@ -314,12 +314,12 @@ void TcpMgr::handleMsg(ReqId id, int len, QByteArray data)
 
 void TcpMgr::slot_tcp_connect(ServerInfo si)
 {
-    qDebug()<< "receive tcp connect signal";
     // 尝试连接到服务器
     qDebug() << "Connecting to server...";
     _host = si.Host;
     _port = static_cast<uint16_t>(si.Port.toUInt());
-    _socket.connectToHost(si.Host, _port);
+    qDebug() << _host << " " << _port;
+    _socket.connectToHost(_host, _port);
 }
 
 void TcpMgr::slot_send_data(ReqId reqId, QString data)

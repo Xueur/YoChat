@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>C:\Boost\cppsoft\libjson\include;C:\Boost\cppsoft\boost_1_90_0;C:\CS\MySQL\mysql-connector-c++-8.3.0-winx64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Boost\cppsoft\libjson\lib;C:\Boost\cppsoft\boost_1_90_0\lib64-msvc-14.3;C:\CS\MySQL\mysql-connector-c++-8.3.0-winx64\lib64\vs14;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>jsoncpp_mdd.lib;debug\mysqlcppconn.lib;debug\mysqlcppconn8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>xcopy $(ProjectDir)config.ini  $(SolutionDir)$(Platform)\$(Configuration)\   /y
+xcopy C:\vcpkg\installed\x64-windows\debug\bin\*.dll   $(SolutionDir)$(Platform)\$(Configuration)\   /y
+xcopy C:\Boost\jsoncpp\jsoncpp-1.9.6\build\bin\Debug\*.dll $(SolutionDir)$(Platform)\$(Configuration)\   /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

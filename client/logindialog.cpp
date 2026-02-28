@@ -62,7 +62,7 @@ void LoginDialog::initHttpHandlers()
             enableBtn(true);
             return;
         }
-        auto user = jsonObj["user"].toString();
+        auto user = jsonObj["email"].toString();
         showTip(tr("登录成功"), true);
         qDebug()<< "user is " << user ;
 

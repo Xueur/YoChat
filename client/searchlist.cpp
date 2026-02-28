@@ -66,6 +66,9 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
         return;
     }
     if(itemType == ListItemType::ADD_USER_TIP_ITEM){
+        if (_send_pending) {
+            return;
+        }
         //todo ...
         _find_dlg = std::make_shared<FindSuccessDialog>(this);
         auto si = std::make_shared<SearchInfo>(0, tr("Xueur"), tr("Xueur"), tr("hello , my friend!"), 0, tr("gg"));

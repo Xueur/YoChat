@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     //连接登录界面登录结束信号
     connect(login_dlg, &LoginDialog::switchChat, this, &MainWindow::SlotSwitchChat);
     //测试用
-    emit login_dlg->switchChat();
+    // emit login_dlg->switchChat();
 
 }
 
