@@ -17,9 +17,9 @@ ApplyFriendDialog::ApplyFriendDialog(QWidget *parent) :
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     this->setObjectName("ApplyFriendDialog");
     this->setModal(true);
-    ui->name_edit->setPlaceholderText(tr("DreamsLentenbe"));
+    ui->desc_edit->setPlaceholderText("Hello!");
     ui->label_edit->setPlaceholderText("搜索、添加标签");
-    ui->back_edit->setPlaceholderText("可爱的淇酱");
+    ui->remark_edit->setPlaceholderText("");
 
     ui->label_edit->SetMaxLength(21);
     ui->label_edit->move(2, 2);
@@ -120,11 +120,10 @@ bool ApplyFriendDialog::eventFilter(QObject *obj, QEvent *event)
 void ApplyFriendDialog::SetSearchInfo(std::shared_ptr<SearchInfo> si)
 {
     _si = si;
-    // auto applyname = UserMgr::getInstance()->GetName();
-    auto applyname = "Xueur";
-    auto bakname = si->_name;
-    ui->name_edit->setText(applyname);
-    ui->back_edit->setText(bakname);
+    auto applyname = UserMgr::getInstance()->GetName();
+    auto rmkname = si->_name;
+    ui->desc_edit->setText(applyname);
+    ui->remark_edit->setText(rmkname);
 }
 
 void ApplyFriendDialog::ShowMoreLabel()
@@ -474,23 +473,22 @@ void ApplyFriendDialog::SlotApplySure()
     QJsonObject jsonObj;
     auto uid = UserMgr::getInstance()->GetUid();
     jsonObj["uid"] = uid;
-    auto name = ui->name_edit->text();
-    if(name.isEmpty()){
-        name = ui->name_edit->placeholderText();
+    auto desc = ui->desc_edit->text();
+    if(desc.isEmpty()){
+        desc = ui->desc_edit->placeholderText();
     }
+    jsonObj["desc"] = desc;
 
-    jsonObj["applyname"] = name;
-
-    auto bakname = ui->back_edit->text();
-    if(bakname.isEmpty()){
-        bakname = ui->back_edit->placeholderText();
+    auto rmkname = ui->remark_edit->text();
+    if(rmkname.isEmpty()){
+        rmkname = ui->remark_edit->placeholderText();
     }
-
-    jsonObj["bakname"] = bakname;
+    UserMgr::getInstance()->SetRmkname(_si->_uid, rmkname);
+    jsonObj["rmkname"] = rmkname;
     jsonObj["touid"] = _si->_uid;
 
     QJsonDocument doc(jsonObj);
-    QString jsonString = doc.toJson(QJsonDocument::Indented);
+    QByteArray jsonString = doc.toJson(QJsonDocument::Indented);
 
     //发送tcp请求给chat server
     emit TcpMgr::getInstance()->sig_send_data(ReqId::ID_ADD_FRIEND_REQ, jsonString);

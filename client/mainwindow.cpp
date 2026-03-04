@@ -43,9 +43,16 @@ void MainWindow::SlotSwitchLogin()
 {
     login_dlg = new LoginDialog(this);
     login_dlg->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
+    //连接登录界面注册信号
+    connect(login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
+    //连接登录界面重置密码信号
+    connect(login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+    //连接登录界面登录结束信号
+    connect(login_dlg, &LoginDialog::switchChat, this, &MainWindow::SlotSwitchChat);
     setCentralWidget(login_dlg);
     reg_dlg->hide();
     login_dlg->show();
+
 }
 
 void MainWindow::SlotSwitchReset()
@@ -63,6 +70,12 @@ void MainWindow::SlotSwitchLogin2()
 {
     login_dlg = new LoginDialog(this);
     login_dlg->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
+    //连接登录界面注册信号
+    connect(login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
+    //连接登录界面重置密码信号
+    connect(login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+    //连接登录界面登录结束信号
+    connect(login_dlg, &LoginDialog::switchChat, this, &MainWindow::SlotSwitchChat);
     setCentralWidget(login_dlg);
     reset_dlg->hide();
     login_dlg->show();

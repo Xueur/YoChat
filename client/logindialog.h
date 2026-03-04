@@ -46,7 +46,7 @@ signals:
     void switchReset();
     void switchChat();
     void sig_connect_tcp(ServerInfo);
-    void sig_send_data(ReqId reqId, QString data);
+    void sig_send_data(ReqId reqId, QByteArray data);
 };
 
 #endif // LOGINDIALOG_H

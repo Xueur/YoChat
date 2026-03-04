@@ -1,4 +1,6 @@
 #include "chatuserlist.h"
+#include "usermgr.h"
+#include <QTimer>
 
 ChatUserList::ChatUserList(QWidget *parent):QListWidget(parent)
 {
@@ -29,7 +31,23 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
         int currentValue = scrollBar->value();
         // int pageSize = 10; // 每页加载的联系人数量
         if (maxScrollValue - currentValue <= 0) {
+            auto b_loaded = UserMgr::getInstance()->IsLoadChatFin();
+            if(b_loaded){
+                return true;
+            }
+
+            if(_load_pending){
+                return true;
+            }
+            // 滚动到底部，加载新的联系人
             qDebug()<<"load more chat user";
+            _load_pending = true;
+
+            QTimer::singleShot(100, [this](){
+                _load_pending = false;
+                QCoreApplication::quit(); // 完成后退出应用程序
+            });
+            //发送信号通知聊天界面加载更多聊天内容
             emit sig_loading_chat_user();
         }
         return true; // 停止事件传递

@@ -2,6 +2,7 @@
 #include <QAbstractSocket>
 #include "usermgr.h"
 #include <QJsonObject>
+#include <QRandomGenerator>
 
 TcpMgr::TcpMgr():_host(""),_port(0),_b_recv_pending(false),_message_id(0),_message_len(0)
 {
@@ -75,7 +76,6 @@ TcpMgr::~TcpMgr(){
 }
 void TcpMgr::initHandlers()
 {
-    //auto self = shared_from_this();
     _handlers.insert(ID_CHAT_LOGIN_RSP, [this](ReqId id, int len, QByteArray data){
         Q_UNUSED(len);
         qDebug()<< "handle id is "<< id ;
@@ -108,22 +108,23 @@ void TcpMgr::initHandlers()
         auto uid = jsonObj["uid"].toInt();
         auto name = jsonObj["name"].toString();
         auto nick = jsonObj["nick"].toString();
-        auto icon = jsonObj["icon"].toString();
+        // auto icon = jsonObj["icon"].toString();
+        auto icon = heads[QRandomGenerator::global()->bounded(100) % heads.size()];
         auto sex = jsonObj["sex"].toInt();
         auto user_info = std::make_shared<UserInfo>(uid, name, nick, icon, sex);
 
         UserMgr::getInstance()->SetUserInfo(user_info);
         UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
+        //添加申请列表
         if(jsonObj.contains("apply_list")){
             UserMgr::getInstance()->AppendApplyList(jsonObj["apply_list"].toArray());
         }
-
         //添加好友列表
         if (jsonObj.contains("friend_list")) {
             UserMgr::getInstance()->AppendFriendList(jsonObj["friend_list"].toArray());
         }
 
-        emit sig_swich_chatdlg();
+        emit sig_switch_chatdlg();
     });
 
 
@@ -143,7 +144,7 @@ void TcpMgr::initHandlers()
 
         if (!jsonObj.contains("error")) {
             int err = ErrorCodes::ERR_JSON;
-            qDebug() << "Login Failed, err is Json Parse Err" << err;
+            qDebug() << "Search Failed, err is Json Parse Err" << err;
 
             emit sig_user_search(nullptr);
             return;
@@ -151,7 +152,7 @@ void TcpMgr::initHandlers()
 
         int err = jsonObj["error"].toInt();
         if (err != ErrorCodes::SUCCESS) {
-            qDebug() << "Login Failed, err is " << err;
+            qDebug() << "Search Failed, err is " << err;
             emit sig_user_search(nullptr);
             return;
         }
@@ -178,20 +179,26 @@ void TcpMgr::initHandlers()
 
         if (!jsonObj.contains("error")) {
             int err = ErrorCodes::ERR_JSON;
-            qDebug() << "Login Failed, err is Json Parse Err" << err;
-
-            emit sig_user_search(nullptr);
+            qDebug() << "Add Failed, err is Json Parse Err" << err;
             return;
         }
 
         int err = jsonObj["error"].toInt();
         if (err != ErrorCodes::SUCCESS) {
-            qDebug() << "Login Failed, err is " << err;
-            emit sig_user_search(nullptr);
+            qDebug() << "Add Failed, err is " << err;
             return;
         }
-        auto apply_info = std::make_shared<AddFriendApply>(jsonObj["applyuid"].toInt(), jsonObj["name"].toString(),
-                                                           jsonObj["desc"].toString());
+
+        int from_uid = jsonObj["applyuid"].toInt();
+        QString name = jsonObj["applyname"].toString();
+        QString desc = jsonObj["desc"].toString();
+        QString icon = jsonObj["icon"].toString();
+        QString nick = jsonObj["nick"].toString();
+        int sex = jsonObj["sex"].toInt();
+
+        auto apply_info = std::make_shared<AddFriendApply>(
+            from_uid, name, desc,
+            icon, nick, sex);
 
         emit sig_friend_apply(apply_info);
     });
@@ -224,7 +231,7 @@ void TcpMgr::initHandlers()
         int from_uid = jsonObj["fromuid"].toInt();
         QString name = jsonObj["name"].toString();
         QString nick = jsonObj["nick"].toString();
-        QString icon = jsonObj["icon"].toString();
+        QString icon = heads[2];
         int sex = jsonObj["sex"].toInt();
 
         auto auth_info = std::make_shared<AuthInfo>(from_uid,name,
@@ -289,15 +296,66 @@ void TcpMgr::initHandlers()
             return;
         }
 
-        auto name = jsonObj["name"].toString();
+        auto uid = jsonObj["uid"].toInt();
+        auto name = UserMgr::getInstance()->GetRmkname(uid);
+        qDebug() << "name is " << name;
         auto nick = jsonObj["nick"].toString();
         auto icon = jsonObj["icon"].toString();
         auto sex = jsonObj["sex"].toInt();
-        auto uid = jsonObj["uid"].toInt();
         auto rsp = std::make_shared<AuthRsp>(uid, name, nick, icon, sex);
         emit sig_auth_rsp(rsp);
 
         qDebug() << "Auth Friend Success " ;
+    });
+    _handlers.insert(ID_TEXT_CHAT_MSG_RSP, [this](ReqId id, int len, QByteArray data) {
+        Q_UNUSED(len);
+        qDebug() << "handle id is " << id << " data is " << data;
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            qDebug() << "Failed to create QJsonDocument.";
+            return;
+        }
+        QJsonObject jsonObj = jsonDoc.object();
+        if (!jsonObj.contains("error")) {
+            int err = ErrorCodes::ERR_JSON;
+            qDebug() << "Chat Msg Rsp Failed, err is Json Parse Err" << err;
+            return;
+        }
+        int err = jsonObj["error"].toInt();
+        if (err != ErrorCodes::SUCCESS) {
+            qDebug() << "Chat Msg Rsp Failed, err is " << err;
+            return;
+        }
+        qDebug() << "Receive Text Chat Rsp Success " ;
+        //ui设置送达等标记 todo...
+    });
+    _handlers.insert(ID_NOTIFY_TEXT_CHAT_MSG_REQ, [this](ReqId id, int len, QByteArray data) {
+        Q_UNUSED(len);
+        qDebug() << "handle id is " << id << " data is " << data;
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            qDebug() << "Failed to create QJsonDocument.";
+            return;
+        }
+        QJsonObject jsonObj = jsonDoc.object();
+        if (!jsonObj.contains("error")) {
+            int err = ErrorCodes::ERR_JSON;
+            qDebug() << "Notify Chat Msg Failed, err is Json Parse Err" << err;
+            return;
+        }
+        int err = jsonObj["error"].toInt();
+        if (err != ErrorCodes::SUCCESS) {
+            qDebug() << "Notify Chat Msg Failed, err is " << err;
+            return;
+        }
+        qDebug() << "Receive Text Chat Notify Success " ;
+        auto msg_ptr = std::make_shared<TextChatMsg>(jsonObj["fromuid"].toInt(),
+                                                     jsonObj["touid"].toInt(),jsonObj["text_array"].toArray());
+        emit sig_text_chat_msg(msg_ptr);
     });
 }
 
@@ -322,15 +380,12 @@ void TcpMgr::slot_tcp_connect(ServerInfo si)
     _socket.connectToHost(_host, _port);
 }
 
-void TcpMgr::slot_send_data(ReqId reqId, QString data)
+void TcpMgr::slot_send_data(ReqId reqId, QByteArray dataBytes)
 {
     uint16_t id = reqId;
 
-    // 将字符串转换为UTF-8编码的字节数组
-    QByteArray dataBytes = data.toUtf8();
-
     // 计算长度（使用网络字节序转换）
-    quint16 len = static_cast<quint16>(data.size());
+    quint16 len = static_cast<quint16>(dataBytes.size());
 
     // 创建一个QByteArray用于存储要发送的所有数据
     QByteArray block;

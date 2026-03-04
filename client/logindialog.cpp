@@ -17,7 +17,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(this, &LoginDialog::sig_connect_tcp, TcpMgr::getInstance().get(), &TcpMgr::slot_tcp_connect);
     connect(TcpMgr::getInstance().get(), &TcpMgr::sig_con_success, this, &LoginDialog::slot_tcp_con_finish);
     connect(this, &LoginDialog::sig_send_data, TcpMgr::getInstance().get(), &TcpMgr::slot_send_data);
-    connect(TcpMgr::getInstance().get(), &TcpMgr::sig_swich_chatdlg, this, &LoginDialog::slot_chat_login_finish);
+    connect(TcpMgr::getInstance().get(), &TcpMgr::sig_switch_chatdlg, this, &LoginDialog::slot_chat_login_finish);
 }
 
 LoginDialog::~LoginDialog()
@@ -170,7 +170,7 @@ void LoginDialog::slot_tcp_con_finish(bool bsuccess)
         jsonObj["uid"] = _uid;
         jsonObj["token"] = _token;
         QJsonDocument doc(jsonObj);
-        QString jsonString = doc.toJson(QJsonDocument::Indented);
+        QByteArray jsonString = doc.toJson(QJsonDocument::Indented);
         //发送tcp请求给chatserver
         emit sig_send_data(ReqId::ID_CHAT_LOGIN, jsonString);
     }else{

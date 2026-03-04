@@ -8,6 +8,7 @@
 #include "applyfriendlist.h"
 #include "tcpmgr.h"
 #include "usermgr.h"
+#include "authenfriend.h"
 
 ApplyFriendPage::ApplyFriendPage(QWidget *parent) :
     QWidget(parent),
@@ -26,14 +27,15 @@ ApplyFriendPage::~ApplyFriendPage()
 void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply)
 {
     //先模拟头像随机，以后头像资源增加资源服务器后再显示
-    int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
+    int randomValue = QRandomGenerator::global()->bounded(100);
     int head_i = randomValue % heads.size();
     auto* apply_item = new ApplyFriendItem();
     auto apply_info = std::make_shared<ApplyInfo>(apply->_from_uid,
-                                                  apply->_name, apply->_desc,heads[head_i], apply->_name, 0, 0);
-    apply_item->SetInfo( apply_info);
+                                                  apply->_name, apply->_desc, heads[head_i], apply->_name, 0, 0);
+    qDebug() << apply->_name << " " << apply->_desc;
+    apply_item->SetInfo(apply_info);
+    _unauth_items[apply->_from_uid] = apply_item;
     QListWidgetItem* item = new QListWidgetItem;
-    //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
     item->setSizeHint(apply_item->sizeHint());
     item->setFlags(item->flags() & ~Qt::ItemIsEnabled & ~Qt::ItemIsSelectable);
     ui->apply_friend_list->insertItem(0,item);
@@ -41,10 +43,10 @@ void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply)
     apply_item->ShowAddBtn(true);
     //收到审核好友信号
     connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-        //        auto* authFriend = new AuthenFriend(this);
-        //        authFriend->setModal(true);
-        //        authFriend->SetApplyInfo(apply_info);
-        //        authFriend->show();
+           auto* authFriend = new AuthenFriend(this);
+           authFriend->setModal(true);
+           authFriend->SetApplyInfo(apply_info);
+           authFriend->show();
     });
 }
 void ApplyFriendPage::paintEvent(QPaintEvent *event)
@@ -59,6 +61,7 @@ void ApplyFriendPage::loadApplyList()
     //添加好友申请
     auto apply_list = UserMgr::getInstance()->GetApplyList();
     for(auto &apply: apply_list){
+        qDebug() << "here";
         int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
         int head_i = randomValue % heads.size();
         auto* apply_item = new ApplyFriendItem();
@@ -79,10 +82,10 @@ void ApplyFriendPage::loadApplyList()
         }
         //收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-            //            auto* authFriend = new AuthenFriend(this);
-            //            authFriend->setModal(true);
-            //            authFriend->SetApplyInfo(apply_info);
-            //            authFriend->show();
+                       auto* authFriend = new AuthenFriend(this);
+                       authFriend->setModal(true);
+                       authFriend->SetApplyInfo(apply_info);
+                       authFriend->show();
         });
     }
     // 模拟假数据，创建QListWidgetItem，并设置自定义的widget
@@ -103,10 +106,10 @@ void ApplyFriendPage::loadApplyList()
         ui->apply_friend_list->setItemWidget(item, apply_item);
         //收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info){
-            //            auto *authFriend =  new AuthenFriend(this);
-            //            authFriend->setModal(true);
-            //            authFriend->SetApplyInfo(apply_info);
-            //            authFriend->show();
+                   auto *authFriend =  new AuthenFriend(this);
+                   authFriend->setModal(true);
+                   authFriend->SetApplyInfo(apply_info);
+                   authFriend->show();
         });
     }
 }
@@ -118,6 +121,7 @@ void ApplyFriendPage::slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp)
         return;
     }
     find_iter->second->ShowAddBtn(false);
+    _unauth_items.erase(find_iter);
 }
 
 

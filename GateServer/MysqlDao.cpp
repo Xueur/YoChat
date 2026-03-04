@@ -24,6 +24,7 @@ int MysqlDao::RegUser(const std::string& name, const std::string& email, const s
         // 准备调用存储过程
         std::unique_ptr<sql::PreparedStatement> stmt(con->_con->prepareStatement("CALL reg_user(?,?,?,@result)"));
         // 设置输入参数
+        std::cout << name << " " << email << " " << pwd << std::endl;
         stmt->setString(1, name);
         stmt->setString(2, email);
         stmt->setString(3, pwd);

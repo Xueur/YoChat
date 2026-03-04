@@ -41,6 +41,23 @@ void ChatView::appendChatItem(QWidget *item)
     isAppended = true;
 }
 
+void ChatView::removeAllItem()
+{
+    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(m_pScrollArea->widget()->layout());
+
+    int count = layout->count();
+
+    for (int i = 0; i < count - 1; ++i) {
+        QLayoutItem *item = layout->takeAt(0); // 始终从第一个控件开始删除
+        if (item) {
+            if (QWidget *widget = item->widget()) {
+                delete widget;
+            }
+            delete item;
+        }
+    }
+}
+
 bool ChatView::eventFilter(QObject *o, QEvent *e)
 {
     /*if(e->type() == QEvent::Resize && o == )
